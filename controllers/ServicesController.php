@@ -302,7 +302,28 @@ class ServicesController extends Controller
 
     public function actionFind()
     {
+        $keyword = Yii::$app->request->get('keyword', "");
+        /*
+        $page = (int) Yii::$app->request->get('page', 1);
+        //$_GET['keyword'] = $keyword; // Fix for post var
 
+        $searchResultSet = Yii::$app->search->find($keyword, [
+            'model' => \humhub\modules\user\models\User::className(),
+            'page' => $page,
+            'pageSize' => Setting::Get('paginationSize')
+        ]);
+
+        $pagination = new \yii\data\Pagination(['totalCount' => $searchResultSet->total, 'pageSize' => $searchResultSet->pageSize]);
+
+        \yii\base\Event::on(Sidebar::className(), Sidebar::EVENT_INIT, function($event) {
+            $event->sender->addWidget(\humhub\modules\directory\widgets\NewMembers::className(), [], ['sortOrder' => 10]);
+            $event->sender->addWidget(\humhub\modules\directory\widgets\MemberStatistics::className(), [], ['sortOrder' => 20]);
+        });
+        */
+        return $this->render('find', array(
+            'keyword' => $keyword,
+            'services' => 1
+        ));
 
     }
 
