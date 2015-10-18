@@ -1,0 +1,11 @@
+{
+    "id": "services",
+    "name": "Services",
+    "description": "Enable the services the user want to share with the community",
+    "keywords": ["services", "smartcity", "communication"],
+    "version": "0.0.1",
+    "humhub": {
+        "minVersion": "0.20"
+    },
+    "screenshots": ["assets/screen1.jpg"]
+}

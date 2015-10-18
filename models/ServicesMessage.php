@@ -1,0 +1,210 @@
+<?php
+
+namespace humhub\modules\services\models;
+
+use Yii;
+use humhub\components\ActiveRecord;
+use humhub\models\Setting;
+use humhub\modules\user\models\User;
+use humhub\modules\services\models\ServicesMessageEntry;
+
+/**
+ * This is the model class for table "services_message".
+ *
+ * The followings are the available columns in table 'message':
+ * @property integer $id
+ * @property string $title
+ * @property string $created_at
+ * @property integer $created_by
+ * @property string $updated_at
+ * @property integer $updated_by
+ *
+ * The followings are the available model relations:
+ * @property MessageEntry[] $messageEntries
+ * @property User[] $users
+ *
+ * @package humhub.modules.services.models
+ * @since 0.5
+ */
+class ServicesMessage extends ActiveRecord
+{
+
+    /**
+     * @return string the associated database table name
+     */
+    public static function tableName()
+    {
+        return 'services_message';
+    }
+
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules()
+    {
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array(['created_by', 'updated_by'], 'integer'),
+            array(['title'], 'string', 'max' => 255),
+            array(['created_at', 'updated_at'], 'safe'),
+        );
+    }
+
+    /**
+     * @return array relational rules.
+     */
+
+    public function relations()
+    {
+        // NOTE: you may need to adjust the relation name and the related
+        // class name for the relations automatically generated below.
+        return array(
+            'servicesentries' => array(self::HAS_MANY, 'ServicesMessageEntry', 'message_id', 'order' => 'created_at ASC'),
+            'users' => array(self::MANY_MANY, 'User', 'services_user_message(message_id, user_id)'),
+            'originator' => array(self::BELONGS_TO, 'User', 'created_by'),
+        );
+    }
+
+
+    public function getServicesentries()
+    {
+        $query = $this->hasMany(ServicesMessageEntry::className(), ['message_id' => 'id']);
+        $query->addOrderBy(['created_at' => SORT_ASC]);
+        return $query;
+    }
+
+    public function getUsers()
+    {
+        return $this->hasMany(User::className(), ['id' => 'user_id'])
+                        ->viaTable('services_user_message', ['message_id' => 'id']);
+    }
+
+    public function getOriginator()
+    {
+        return $this->hasOne(User::className(), ['id' => 'created_by']);
+    }
+
+    /**
+     * @return array customized attribute labels (name=>label)
+     */
+    public function attributeLabels()
+    {
+        return array(
+            'id' => 'ID',
+            'title' => 'Title',
+            'created_at' => 'Created At',
+            'created_by' => 'Created By',
+            'updated_at' => 'Updated At',
+            'updated_by' => 'Updated By',
+        );
+    }
+
+    /**
+     * Returns the last message of this conversation
+     */
+    public function getLastEntry()
+    {
+        return ServicesMessageEntry::find()->where(['message_id' => $this->id])->orderBy('created_at DESC')->limit(1)->one();
+    }
+
+    /**
+     * Deletes message entry by given Id
+     * If it's the last entry, the whole message will be deleted.
+     *
+     * @param MessageEntry $entry
+     */
+    public function deleteEntry($entry)
+    {
+        if ($entry->message->id == $this->id) {
+            if (count($this->entries) > 1) {
+                $entry->delete();
+            } else {
+                $this->delete();
+            }
+        }
+    }
+
+    /**
+     * User leaves a message
+     *
+     * If it's the last user, the whole message will be deleted.
+     *
+     * @param int $userId
+     */
+    public function leave($userId)
+    {
+        $userMessage = ServicesUserMessage::findOne(array(
+                    'message_id' => $this->id,
+                    'user_id' => $userId
+        ));
+
+        if (count($this->users) > 1) {
+            $userMessage->delete();
+        } else {
+            $this->delete();
+        }
+    }
+
+    /**
+     * Marks a message as seen for given userId
+     *
+     * @param int $userId
+     */
+    public function seen($userId)
+    {
+        // Update User Message Entry
+        $userMessage = ServicesUserMessage::findOne(array(
+                    'user_id' => $userId,
+                    'message_id' => $this->id
+        ));
+        if ($userMessage !== null) {
+            $userMessage->last_viewed = new \yii\db\Expression('NOW()');
+            $userMessage->save();
+        }
+    }
+
+    /**
+     * Deletes a message, including all dependencies.
+     */
+    public function delete()
+    {
+        foreach (ServicesMessageEntry::findAll(array('message_id' => $this->id)) as $messageEntry) {
+            $messageEntry->delete();
+        }
+
+        foreach (ServicesUserMessage::findAll(array('message_id' => $this->id)) as $userMessage) {
+            $userMessage->delete();
+        }
+
+        parent::delete();
+    }
+
+    /**
+     * Notify given user, about this message
+     * An email will sent.
+     */
+    public function notify($user)
+    {
+        $andAddon = "";
+        if (count($this->users) > 2) {
+            $counter = count($this->users) - 1;
+            $andAddon = Yii::t('MailModule.models_Message', "and {counter} other users", array("{counter}" => $counter));
+        }
+
+        Yii::setAlias('@mailmodule', Yii::$app->getModule('mail')->getBasePath());
+
+        $mail = Yii::$app->mailer->compose(['html' => '@mailmodule/views/emails/NewMessage'], [
+            'message' => $this,
+            'originator' => $this->originator,
+            'andAddon' => $andAddon,
+            'entry' => $this->getLastEntry(),
+            'user' => $user,
+        ]);
+        $mail->setFrom([Setting::Get('systemEmailAddress', 'mailing') => Setting::Get('systemEmailName', 'mailing')]);
+        $mail->setTo($user->email);
+        $mail->setSubject(Yii::t('MailModule.models_Message', 'New message from {senderName}', array("{senderName}" => \yii\helpers\Html::encode($this->originator->displayName))));
+        $mail->send();
+    }
+
+}
