@@ -40,13 +40,9 @@ use yii\helpers\Url;
                  </div>
             </div>
         </div>
-        <div class="col-md-7">
+        <div class="col-md-10">
             <!-- show content -->
             <?php echo $content; ?>
-        </div>
-        <div class="col-md-3">
-            <!-- show directory sidebar stream -->
-            <?php echo \humhub\modules\directory\widgets\Sidebar::widget(); ?>
         </div>
     </div>
 

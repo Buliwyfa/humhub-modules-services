@@ -18,14 +18,12 @@ use yii\helpers\Html;
 
         <?php echo Html::beginForm(Url::to(['/services/services/find']), 'get', array('class' => 'form-search')); ?>
         <div class="row">
-            <div class="col-md-3"></div>
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="form-group form-group-search">
                     <?php echo Html::textInput("keyword", $keyword, array("class" => "form-control form-search", "placeholder" => Yii::t('DirectoryModule.views_directory_members', 'search for services'))); ?>
                     <?php echo Html::submitButton(Yii::t('DirectoryModule.views_directory_members', 'Search'), array('class' => 'btn btn-default btn-sm form-button-search')); ?>
                 </div>
             </div>
-            <div class="col-md-3"></div>
         </div>
         <?php echo Html::endForm(); ?>
 
@@ -33,33 +31,28 @@ use yii\helpers\Html;
             <p><?php echo Yii::t('DirectoryModule.views_directory_members', 'No services found into the net!'); ?></p>
         <?php endif; ?>
 
-        <!-- map -->
-        <?php
-        /*
-            use \dosamigos\leaflet\types\LatLng;
-            use \dosamigos\leaflet\layers\Marker;
-            use \dosamigos\leaflet\layers\TileLayer;
-            use \dosamigos\leaflet\LeafLet;
-            use \dosamigos\leaflet\widgets\Map;
-
-            $center = new dosamigos\leaflet\types\LatLng(['lat' => 51.508, 'lng' => -0.11]);
-            $marker = new Marker(['latLng' => $center, 'popupContent' => 'Hi!']);
-            // The Tile Layer (very important)
-            $tileLayer = new TileLayer([ 'urlTemplate' => 'https://a.tiles.mapbox.com/v4/acaristia.cifwfsxqe0241tdm0n5oaavk6/page.html', 'clientOptions' => [ 'attribution' => 'Tiles Courtesy of MapQuest ' . ', ' . 'Map data © OpenStreetMap contributors, CC-BY-SA', 'subdomains' => '1234' ] ]);
-            // now our component and we are going to configure it
-            $leaflet = new LeafLet([ 'center' => $center,]); // set the center
-            // // Different layers can be added to our map using the `addLayer` function.
-            $leaflet->addLayer($marker); // add the marker ->addLayer($tileLayer);
-            // add the tile layer
-            // finally render the widget
-            echo Map::widget(['leafLet' => $leaflet]);
-            // we could also do
-            // echo $leaflet->widget();
-        */
-        
-        ?>
-    
-    <div id="map" style="width: 600px; height: 400px"></div>
+	<div class="row">
+    		<!-- map -->
+		<div class="col-md-8">
+    			<div id="map" style="width: 600px; height: 400px"></div>
+		</div>
+		<!-- list services -->
+		<div class="col-md-4">
+			<ul class="media-list">
+  				<li class="media">
+    					<div class="media-left">
+      						<a href="#">
+        					<img class="media-object" src="..." alt="...">
+      						</a>
+    					</div>
+    					<div class="media-body">
+      						<h4 class="media-heading">Media heading</h4>
+     ...
+    					</div>
+  				</li>
+			</ul>	
+		</div>
+    	</div>
     </div>
     <hr>
 
