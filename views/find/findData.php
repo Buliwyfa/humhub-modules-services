@@ -34,31 +34,7 @@ use yii\helpers\Html;
         <?php endif; ?>
 
         <!-- map -->
-        <?php
-        /*
-            use \dosamigos\leaflet\types\LatLng;
-            use \dosamigos\leaflet\layers\Marker;
-            use \dosamigos\leaflet\layers\TileLayer;
-            use \dosamigos\leaflet\LeafLet;
-            use \dosamigos\leaflet\widgets\Map;
-
-            $center = new dosamigos\leaflet\types\LatLng(['lat' => 51.508, 'lng' => -0.11]);
-            $marker = new Marker(['latLng' => $center, 'popupContent' => 'Hi!']);
-            // The Tile Layer (very important)
-            $tileLayer = new TileLayer([ 'urlTemplate' => 'https://a.tiles.mapbox.com/v4/acaristia.cifwfsxqe0241tdm0n5oaavk6/page.html', 'clientOptions' => [ 'attribution' => 'Tiles Courtesy of MapQuest ' . ', ' . 'Map data © OpenStreetMap contributors, CC-BY-SA', 'subdomains' => '1234' ] ]);
-            // now our component and we are going to configure it
-            $leaflet = new LeafLet([ 'center' => $center,]); // set the center
-            // // Different layers can be added to our map using the `addLayer` function.
-            $leaflet->addLayer($marker); // add the marker ->addLayer($tileLayer);
-            // add the tile layer
-            // finally render the widget
-            echo Map::widget(['leafLet' => $leaflet]);
-            // we could also do
-            // echo $leaflet->widget();
-        */
-        
-        ?>
-    
+            
     <div id="map" style="width: 600px; height: 400px"></div>
     </div>
     <hr>
