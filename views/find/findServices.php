@@ -2,6 +2,10 @@
 
 use yii\helpers\Url;
 use yii\helpers\Html;
+
+$redis = Yii::$app->redis;
+
+$result = $redis->executeCommand('hmset', ['test_collection', 'key1', 'val1', 'key2', 'val2']);
 ?>
 <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.css" />
 <script src="http://cdn.leafletjs.com/leaflet-0.7.5/leaflet.js"></script>
@@ -40,7 +44,7 @@ use yii\helpers\Html;
 		<div class="col-md-4">
 			<ul class="media-list">
 			<?php foreach ($list_services as $item): ?>
-  				<li class="media">
+  				<li id="<?php echo $item->id ?>"class="media">
     					<div class="media-left">
       						<a href="#">
         					<img class="media-object" src="..." alt="...">
@@ -61,10 +65,20 @@ use yii\helpers\Html;
 
 </div>
 
-
+<!-- script click services menu(right) -->
 <script>
+    var my_position;
+    $(document).ready(function (){
+    			navigator.geolocation.getCurrentPosition(showPosition);
+    			function showPosition(position) {
+				my_position = [position.coords.latitude, position.coords.longitude];	
+    		                showMap(my_position);
+			}	
+		     });
 
-    var map = L.map('map').setView([51.505, -0.09], 13);
+    function showMap(current_pos){
+	var map = L.map('map').setView(current_pos, 13);
+    //var map = L.map('map').setView([51.505, -0.09], 13);
 
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6IjZjNmRjNzk3ZmE2MTcwOTEwMGY0MzU3YjUzOWFmNWZhIn0.Y8bhBaUMqFiPrDRW9hieoQ', {
         maxZoom: 18,
@@ -74,7 +88,7 @@ use yii\helpers\Html;
         id: 'mapbox.streets'
     }).addTo(map);
 
-
+    /*
     L.marker([51.5, -0.09]).addTo(map)
         .bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
 
@@ -101,5 +115,13 @@ use yii\helpers\Html;
     }
 
     map.on('click', onMapClick);
+    */
 
+
+    }
+	
 </script>
+
+<!-- script map -->
+<script>
+   </script>
