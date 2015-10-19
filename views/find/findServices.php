@@ -39,6 +39,7 @@ use yii\helpers\Html;
 		<!-- list services -->
 		<div class="col-md-4">
 			<ul class="media-list">
+			<?php foreach ($list_services as $item): ?>
   				<li class="media">
     					<div class="media-left">
       						<a href="#">
@@ -46,10 +47,11 @@ use yii\helpers\Html;
       						</a>
     					</div>
     					<div class="media-body">
-      						<h4 class="media-heading">Media heading</h4>
+      						<h4 class="media-heading"><?php echo $item->name ?></h4>
      ...
     					</div>
   				</li>
+			<?php endforeach; ?>
 			</ul>	
 		</div>
     	</div>

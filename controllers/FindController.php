@@ -7,13 +7,8 @@ use yii\helpers\Url;
 use yii\web\HttpException;
 use humhub\components\Controller;
 use humhub\modules\file\models\File;
-use humhub\modules\services\models\ServicesMessage;
-use humhub\modules\services\models\ServicesMessageEntry;
-use humhub\modules\services\models\ServicesUserMessage;
 use humhub\modules\User\models\User;
-use humhub\modules\services\models\forms\InviteRecipient;
-use humhub\modules\services\models\forms\ReplyMessage;
-use humhub\modules\services\models\forms\CreateMessage;
+use humhub\modules\services\models\Service;
 
 /**
  * ServicesController provides messaging actions.
@@ -37,10 +32,13 @@ class FindController extends Controller
 
     public function actionServices()
     {
+	$listServices = Service::find()
+		->all();
         $keyword = Yii::$app->request->get('keyword', "");
         return $this->render('findServices', array(
             'keyword' => $keyword,
-            'services' => 1
+            'services' => 1,
+	    'list_services' => $listServices
         ));
 
     }
