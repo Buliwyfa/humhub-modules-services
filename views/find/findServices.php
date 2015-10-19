@@ -78,6 +78,14 @@ $result = $redis->executeCommand('hmset', ['test_collection', 'key1', 'val1', 'k
 
     function showMap(current_pos){
 
+	var basicLayer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6IjZjNmRjNzk3ZmE2MTcwOTEwMGY0MzU3YjUzOWFmNWZhIn0.Y8bhBaUMqFiPrDRW9hieoQ', {
+        maxZoom: 18,
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+        id: 'mapbox.streets'
+    })	
+
 
 	var littleton = L.marker([38.1853897, 15.5486825]).bindPopup('This is Littleton, CO.'),
     	denver    = L.marker([38.183654461352646, 15.553014278411865]).bindPopup('This is Denver, CO.'),
@@ -87,11 +95,12 @@ $result = $redis->executeCommand('hmset', ['test_collection', 'key1', 'val1', 'k
 	var map = L.map('map', {
    		center: current_pos,
     		zoom: 14,
-    		layers: [servizio_uno]
+    		layers: [basicLayer, servizio_uno]
 	});
 	//var map = L.map('map').setView(current_pos, 13);
     //var map = L.map('map').setView([51.505, -0.09], 13);
 
+/*
     	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6IjZjNmRjNzk3ZmE2MTcwOTEwMGY0MzU3YjUzOWFmNWZhIn0.Y8bhBaUMqFiPrDRW9hieoQ', {
         maxZoom: 18,
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
@@ -99,11 +108,15 @@ $result = $redis->executeCommand('hmset', ['test_collection', 'key1', 'val1', 'k
         'Imagery © <a href="http://mapbox.com">Mapbox</a>',
         id: 'mapbox.streets'
     }).addTo(map);
-	
+*/	
+
+	var baseMaps = {
+    		"Map": basicLayer,
+	};
 	var overlayMaps = {
     		"Servizio Uno": servizio_uno
 	};
-	L.control.layers(overlayMaps).addTo(map);
+	L.control.layers(baseMaps, overlayMaps).addTo(map);
         /*
     L.marker([51.5, -0.09]).addTo(map)
         .bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
