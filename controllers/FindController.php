@@ -53,5 +53,46 @@ class FindController extends Controller
 
     }
 
+    public function actionGetServicesJson()
+    {
+
+	$toView = array();
+    $lat = Yii::$app->request->get('lat', "");
+	$long = Yii::$app->request->get('long', "");
+	$radius = Yii::$app->request->get('radius', "");
+
+	Yii::$app->response->format = 'json';
+
+        $json = array();
+        $listServices = Service::find()
+            ->all();
+
+
+        //$json['services'] = Services::find()
+        //    ->all();
+	
+	$redis = Yii::$app->redis;
+	//GEORADIUS servizio lat long radius km WITHCOORD
+	foreach ($listServices as $item){
+        $service = array();
+        $service['name'] = $item->name;
+        $service['id'] = $item->id;
+		$result = $redis->executeCommand('GEORADIUS', [$item['name'], $lat, $long, $radius,'km', 'WITHCOORD']);
+        $points = array();
+        foreach($result as $tmp){
+            $one_point = array();
+            $one_point['name'] = $tmp[0];
+            $one_point['lat'] = $tmp[1][0];
+            $one_point['long'] = $tmp[1][1];
+            array_push($points, $one_point);
+        }
+
+		$service['points'] = $points;
+		array_push($toView, $service);
+	}
+
+        return $toView;
+
+    }
 
 }
